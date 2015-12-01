@@ -1,16 +1,18 @@
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] DiagnosticsStoreRootPath set to: C:\Users\Nikita\AppData\Local\dftmp\Resources\e6924a0f-c98e-43e1-9041-4e1dbd352d87
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Loading config file: C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Checking VM Type
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Extension set to Emulator Mode
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Reading XML configuration file
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Bypassing private config decryption
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Stopping the running plugin, if any
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] No DiagnosticsPlugin is running.
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Killing any DiagnosticsPlugin that might remain.
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Killing any MonAgentHost that might remain.
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Diagnostics plugin stopped successfully
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:46:48 AM] Resetting DiagnosticPlugin
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:47:59 AM] DiagnosticsPlugin launched successfully with new configuration
-DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 9:47:59 AM] DiagnosticPlugin exited with code 0
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] At least one other instance of the launcher is running. Will wait until they all finish
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Service running in Emulator Mode, will not wait/kill other instances of the launcher
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] DiagnosticsStoreRootPath set to: C:\Users\Nikita\AppData\Local\dftmp\Resources\158d5bb3-a3a6-4dd5-ba70-31628664a401
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Loading config file: C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Checking VM Type
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Extension set to Emulator Mode
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Reading XML configuration file
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Bypassing private config decryption
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Stopping the running plugin, if any
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] No DiagnosticsPlugin is running.
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Killing any DiagnosticsPlugin that might remain.
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:00 PM] Killing any MonAgentHost that might remain.
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:01 PM] Diagnostics plugin stopped successfully
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 6:59:01 PM] Resetting DiagnosticPlugin
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 7:00:11 PM] DiagnosticsPlugin launched successfully with new configuration
+DiagnosticsPluginLauncher.exe Information: 0 : [12/1/2015 7:00:11 PM] DiagnosticPlugin exited with code 0

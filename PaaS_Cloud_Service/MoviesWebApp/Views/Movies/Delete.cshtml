@@ -44,11 +44,14 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Poster)
+            @Html.DisplayNameFor(model => model.Thumbnail)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Poster)
+                @if (Model.Thumbnail != null)
+                {
+                    <img src="@Url.Content(Model.Thumbnail)" alt="IMAGES" />
+                }
         </dd>
 
     </dl>
