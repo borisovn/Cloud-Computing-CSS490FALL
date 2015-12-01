@@ -1,0 +1,8 @@
+Logfile generated at: startuptasklog-20151129-0234.txt 
+Checking if .NET ("NDP452") is installed 
+Installing .NET. Logfile: NetFXInstallerLog-20151129-0234 
+Access is denied.
+install.cmd completed: 20151129-0234 
+Logfile generated at: startuptasklog-20151129-0234.txt 
+Checking if .NET ("NDP452") is installed 
+Installing .NET. Logfile: NetFXInstallerLog-20151129-0234 

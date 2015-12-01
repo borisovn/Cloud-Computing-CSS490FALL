@@ -1,0 +1,76 @@
+﻿@model IEnumerable<MoviesDBCommon.Movie>
+
+@{
+    ViewBag.Title = "Search";
+}
+<div>
+    <div class="text-primary">
+        <h2>Search</h2>
+        <p>Type any string you want to search in movie titles</p>
+</div>
+    <hr>
+    @using (Html.BeginForm())
+    {
+        <div class="breadcrumb">
+            <div class="row">
+                <div class="col-sm-2">
+                    <p>Title @Html.TextBox("title")</p>
+                </div>
+                <div class="col-sm-2 ">
+                    <p>Year  @Html.TextBox("year")</p>
+                </div>
+                <div class="col-sm-2 ">
+                    <p>Type   @Html.TextBox("type")</p>
+                </div>
+                <div class="col-sm-2">
+                    <br />
+                    <p><input type="submit" value="Filter" class="btn-group-xs"></p>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Year)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Type)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Thumbnail)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Year)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @if (item.Thumbnail != null)
+                        {
+                            <img src="@Url.Content(item.Thumbnail)" alt="IMAGES" />
+                        }
+                    </td>
+                    <td>
+                        @Html.ActionLink("Details", "Details", new { id = item.MovieId }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.MovieId })
+                    </td>
+                </tr>
+            }
+
+        </table>

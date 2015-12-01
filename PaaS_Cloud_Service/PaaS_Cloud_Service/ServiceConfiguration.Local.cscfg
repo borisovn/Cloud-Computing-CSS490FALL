@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="PaaS_Cloud_Service" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="MoviesWebApp">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=assignment03;AccountKey=bKlduM85Ocde6/IAgm0hx1J2l6W2y6I2L9Bv0PJGwqrz9FHIgdW6UXnk8xiiFIW4ziidOwmzNhCN8wYEthCXZQ==" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=assignment03;AccountKey=bKlduM85Ocde6/IAgm0hx1J2l6W2y6I2L9Bv0PJGwqrz9FHIgdW6UXnk8xiiFIW4ziidOwmzNhCN8wYEthCXZQ==" />
+    </ConfigurationSettings>
+  </Role>
+  <Role name="MoviesWorker">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="moviesassignment03DbConnectionString" value="Server=tcp:p6g7k75brj.database.windows.net,1433;Database=MoviesAssignment03;User ID=nikita@p6g7k75brj;Password=CSS490fall;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=assignment03;AccountKey=bKlduM85Ocde6/IAgm0hx1J2l6W2y6I2L9Bv0PJGwqrz9FHIgdW6UXnk8xiiFIW4ziidOwmzNhCN8wYEthCXZQ==" />
+      <Setting name="StorageConnectionStringBus" value="Endpoint=sb://borisov-scaling.servicebus.windows.net/;SharedAccessKeyName=nikita;SharedAccessKey=Uyljtk1NzyfxJCiCYIbsgnirrIvgTqpD25s5DYFQG2Y=" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>
