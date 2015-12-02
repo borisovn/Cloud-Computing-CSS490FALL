@@ -97,6 +97,10 @@
       <Project>{fd7c2432-ebb6-4988-9ed7-da631fc8c216}</Project>
       <Name>MoviesDBCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MyLogger\MyLogger.csproj">
+      <Project>{1a0bc5a8-c4fd-46a3-9092-0919b36dad73}</Project>
+      <Name>MyLogger</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

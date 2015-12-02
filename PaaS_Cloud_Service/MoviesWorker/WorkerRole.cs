@@ -12,9 +12,9 @@ using MoviesDBCommon;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-
-using Microsoft.WindowsAzure.ServiceRuntime;
 using System.Linq;
+using System.ComponentModel;
+using MyLogger;
 
 namespace MoviesWorker
 {
@@ -23,10 +23,13 @@ namespace MoviesWorker
         private CloudQueue imagesQueue;
         private CloudBlobContainer imagesBlobContainer;
         private MoviesDBCommon.MovieContext db;
+        private ILogger logger;
+        private IContainer container;
 
         public override void Run()
         {
-            Trace.TraceInformation("Movie entry point called");
+            logger.Information("Movie entry point called");
+            //Trace.TraceInformation("Movie entry point called");
             CloudQueueMessage msg = null;
 
             while (true)
@@ -55,14 +58,18 @@ namespace MoviesWorker
                     if (msg != null && msg.DequeueCount > 5)
                     {
                         this.imagesQueue.DeleteMessage(msg);
-                        Trace.TraceError("Deleting poison queue item: '{0}'", msg.AsString);
+                        logger.Error("Deleting poison queue item : '{0}'", msg.AsString);
+                        //Trace.TraceError("Deleting poison queue item: '{0}'", msg.AsString);
                     }
-                    Trace.TraceError("Exception in MoviesWorker: '{0}'", e.Message);
+                    logger.Error("Exception in MoviesWorker: '{0}'", e.Message);
+                    //Trace.TraceError("Exception in MoviesWorker: '{0}'", e.Message);
                 }
             }
         }
 
         /// <summary>
+        /// Checks whatever db has duplicates rows
+        /// based on imdbID
         /// </summary>
         /// <param name="imdbID"></param>
         /// <returns></returns>
@@ -74,13 +81,15 @@ namespace MoviesWorker
 
         private void ProcessQueueMessage(CloudQueueMessage msg)
         {
-            Trace.TraceInformation("Processing queue message {0}", msg);
+            logger.Information("Processing queue message {0}", msg);
+            //Trace.TraceInformation("Processing queue message {0}", msg);
 
             // Queue message contains MoviesId
             var adId = int.Parse(msg.AsString);
             Movie movie = db.Movies.Find(adId);
             if (movie == null)
             {
+                logger.Error("AdId {0} not found, can't create thumbnail",adId.ToString());
                 throw new Exception(String.Format("AdId {0} not found, can't create thumbnail", adId.ToString()));
             }
 
@@ -89,7 +98,8 @@ namespace MoviesWorker
             {
                 db.Movies.Remove(movie);
                 db.SaveChanges();
-                Trace.TraceInformation("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
+                logger.Information("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
+                //Trace.TraceInformation("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
                 this.imagesQueue.DeleteMessage(msg);
                 return;
             }
@@ -107,10 +117,13 @@ namespace MoviesWorker
                 ConvertImageToThumbnailJPG(input, output);
                 outputBlob.Properties.ContentType = "image/jpeg";
             }
-            Trace.TraceInformation("Generated thumbnail in blob {0}", thumbnailName);
+
+            logger.Information("Generated thumbnail in blob {0}", thumbnailName);
+            //Trace.TraceInformation("Generated thumbnail in blob {0}", thumbnailName);
 
             movie.Thumbnail = outputBlob.Uri.ToString();
             db.SaveChanges();
+            logger.Information("Updated thumbnail URL in database: {0}", movie.Poster);
            Trace.TraceInformation("Updated thumbnail URL in database: {0}", movie.Poster);
 
             // Remove message from queue.
@@ -164,6 +177,10 @@ namespace MoviesWorker
         // http://azure.microsoft.com/en-us/documentation/articles/cloud-services-dotnet-multi-tier-app-storage-3-web-role/#restarts
         public override bool OnStart()
         {
+
+            // creare logger
+            logger = new Logger();
+
             // Set the maximum number of concurrent connections.
             ServicePointManager.DefaultConnectionLimit = 12;
 
@@ -174,8 +191,8 @@ namespace MoviesWorker
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse
                 (RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString"));
-
-            Trace.TraceInformation("Creating images blob container");
+            logger.Information("Creating images blob container named images");
+            //Trace.TraceInformation("Creating images blob container named images");
             var blobClient = storageAccount.CreateCloudBlobClient();
             imagesBlobContainer = blobClient.GetContainerReference("images");
             if (imagesBlobContainer.CreateIfNotExists())
@@ -188,12 +205,14 @@ namespace MoviesWorker
                     });
             }
 
-            Trace.TraceInformation("Creating images queue");
+            logger.Information("Creating images queue");
+            //Trace.TraceInformation("Creating images queue");
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
             imagesQueue = queueClient.GetQueueReference("images");
             imagesQueue.CreateIfNotExists();
 
-            Trace.TraceInformation("Storage initialized");
+            logger.Information("Storage initialized");
+            //Trace.TraceInformation("Storage initialized");
             return base.OnStart();
         }
     }

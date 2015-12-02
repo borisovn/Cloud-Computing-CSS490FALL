@@ -240,6 +240,10 @@
       <Project>{12059195-94ee-4267-9c0e-d5648516fda4}</Project>
       <Name>MoviesWorker</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MyLogger\MyLogger.csproj">
+      <Project>{1a0bc5a8-c4fd-46a3-9092-0919b36dad73}</Project>
+      <Name>MyLogger</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

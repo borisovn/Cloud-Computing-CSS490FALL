@@ -120,3 +120,5 @@ C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-
 C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesDBCommon\obj\Debug\MoviesDBCommon.csprojResolveAssemblyReference.cache
 C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesDBCommon\obj\Debug\MoviesDBCommon.dll
 C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesDBCommon\obj\Debug\MoviesDBCommon.pdb
+C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesDBCommon\bin\Debug\MyLogger.dll
+C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesDBCommon\bin\Debug\MyLogger.pdb

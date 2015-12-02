@@ -27,6 +27,7 @@ namespace MoviesWebApp.Controllers
         private MovieContext db = new MovieContext();
         private CloudQueue imagesQueue;
         private static CloudBlobContainer imagesBlobContainer;
+      
 
         public MoviesController()
         {
