@@ -13,8 +13,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.ComponentModel;
 using MyLogger;
+using System.Threading.Tasks;
 
 namespace MoviesWorker
 {
@@ -24,7 +24,6 @@ namespace MoviesWorker
         private CloudBlobContainer imagesBlobContainer;
         private MoviesDBCommon.MovieContext db;
         private ILogger logger;
-        private IContainer container;
 
         public override void Run()
         {
@@ -44,8 +43,8 @@ namespace MoviesWorker
                     msg = this.imagesQueue.GetMessage();
                     if (msg != null)
                     {
-                      //  this.imagesQueue.DeleteMessage(msg);
-                       ProcessQueueMessage(msg);
+                     //  this.imagesQueue.DeleteMessage(msg);
+                      ProcessQueueMessage(msg);
 
                     }
                     else
@@ -79,7 +78,7 @@ namespace MoviesWorker
             return count > 1;
         }
 
-        private void ProcessQueueMessage(CloudQueueMessage msg)
+        private async void ProcessQueueMessage(CloudQueueMessage msg)
         {
             logger.Information("Processing queue message {0}", msg);
             //Trace.TraceInformation("Processing queue message {0}", msg);
@@ -87,45 +86,54 @@ namespace MoviesWorker
             // Queue message contains MoviesId
             var adId = int.Parse(msg.AsString);
             Movie movie = db.Movies.Find(adId);
+            CloudBlockBlob imageBlob = null;
             if (movie == null)
             {
-                logger.Error("AdId {0} not found, can't create thumbnail",adId.ToString());
-                throw new Exception(String.Format("AdId {0} not found, can't create thumbnail", adId.ToString()));
+                logger.Error("AdId {0} not found, can't create thumbnail and poster", adId.ToString());
+                throw new Exception(String.Format("AdId {0} not found, can't create thumbnail and poster", adId.ToString()));
             }
 
             // delete duplicates if exists
-            if(MoviesExists(movie.imdbID))
+            if (MoviesExists(movie.imdbID))
             {
+                // delete blob add timer here
+                await DeleteMovieBlobsAsync(movie);
                 db.Movies.Remove(movie);
                 db.SaveChanges();
                 logger.Information("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
-                //Trace.TraceInformation("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
                 this.imagesQueue.DeleteMessage(msg);
                 return;
             }
 
-            Uri blobUri = new Uri(movie.Poster);
-            string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
-
-            CloudBlockBlob inputBlob = this.imagesBlobContainer.GetBlockBlobReference(blobName);
-            string thumbnailName = Path.GetFileNameWithoutExtension(inputBlob.Name) + "thumb.jpg";
-            CloudBlockBlob outputBlob = this.imagesBlobContainer.GetBlockBlobReference(thumbnailName);
-
-            using (Stream input = inputBlob.OpenRead())
-            using (Stream output = outputBlob.OpenWrite())
+            // add Poster and Thumbnail to blob if exists
+            if (!String.IsNullOrWhiteSpace(movie.Poster) && (movie.Poster != "N/A"))
             {
-                ConvertImageToThumbnailJPG(input, output);
-                outputBlob.Properties.ContentType = "image/jpeg";
+                // add Poster
+                // add timer here
+                imageBlob =  UploadAndSaveBlobAsyncByWeb(movie.Poster);
+                movie.Poster =  imageBlob.Uri.ToString();
+
+                // proccess thumbnail
+                Uri blobUri = new Uri(movie.Poster);
+                string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
+
+                CloudBlockBlob inputBlob = this.imagesBlobContainer.GetBlockBlobReference(blobName);
+                string thumbnailName = Path.GetFileNameWithoutExtension(inputBlob.Name) + "thumb.jpg";
+                CloudBlockBlob outputBlob = this.imagesBlobContainer.GetBlockBlobReference(thumbnailName);
+
+                using (Stream input = inputBlob.OpenRead())
+                using (Stream output = outputBlob.OpenWrite())
+                {
+                    ConvertImageToThumbnailJPG(input, output);
+                    outputBlob.Properties.ContentType = "image/jpeg";
+                }
+                //add timer
+                logger.Information("Generated thumbnail in blob {0}", thumbnailName);
+                movie.Thumbnail = outputBlob.Uri.ToString();
+                logger.Information("Updated thumbnail URL in database: {0}", movie.Poster);
             }
-
-            logger.Information("Generated thumbnail in blob {0}", thumbnailName);
-            //Trace.TraceInformation("Generated thumbnail in blob {0}", thumbnailName);
-
-            movie.Thumbnail = outputBlob.Uri.ToString();
+                  
             db.SaveChanges();
-            logger.Information("Updated thumbnail URL in database: {0}", movie.Poster);
-           Trace.TraceInformation("Updated thumbnail URL in database: {0}", movie.Poster);
-
             // Remove message from queue.
             this.imagesQueue.DeleteMessage(msg);
         }
@@ -171,6 +179,75 @@ namespace MoviesWorker
                 }
             }
         }
+
+
+        /// <summary>
+        ///  upload and save imahge to blob
+        /// </summary>
+        /// <param name="imageFile"></param>
+        /// <returns></returns>
+        private CloudBlockBlob UploadAndSaveBlobAsyncByWeb(string imageFile)
+        {
+            logger.Information("Uploading image file {0}", imageFile);
+            //Trace.TraceInformation("Uploading image file {0}", imageFile);
+
+            string blobName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile);
+            // Retrieve reference to a blob. 
+            CloudBlockBlob imageBlob = imagesBlobContainer.GetBlockBlobReference(blobName);
+            // Create the blob by uploading a local file.
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(imageFile);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            Stream inputStream = response.GetResponseStream();
+
+            if ((response.StatusCode == HttpStatusCode.OK ||
+       response.StatusCode == HttpStatusCode.Moved ||
+       response.StatusCode == HttpStatusCode.Redirect) &&
+       response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
+            {
+                using (var fileStream = inputStream)
+                {
+                     imageBlob.UploadFromStream(fileStream);
+                }
+                logger.Information("Uploaded image file to {0}", imageBlob.Uri.ToString());
+                //Trace.TraceInformation("Uploaded image file to {0}", imageBlob.Uri.ToString());
+
+                return imageBlob;
+            }
+
+            return null;
+        }
+        /// <summary>
+        ///  DeleteMovieBlobsAsync Fucntion:
+        ///  delete blob from the storage
+        /// </summary>
+        /// <param name="movie"></param>
+        /// <returns></returns>
+        private async Task DeleteMovieBlobsAsync(Movie movie)
+        {
+            if (!string.IsNullOrWhiteSpace(movie.Poster))
+            {
+                Uri blobUri = new Uri(movie.Poster);
+                await DeleteMovieBlobAsync(blobUri);
+            }
+            if (!string.IsNullOrWhiteSpace(movie.Thumbnail))
+            {
+                Uri blobUri = new Uri(movie.Thumbnail);
+                await DeleteMovieBlobAsync(blobUri);
+            }
+        }
+        private async Task DeleteMovieBlobAsync(Uri blobUri)
+        {
+            string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
+            logger.Information("Deleting image blob {0}", blobName);
+            //Trace.TraceInformation("Deleting image blob {0}", blobName);
+            CloudBlockBlob blobToDelete = imagesBlobContainer.GetBlockBlobReference(blobName);
+            await blobToDelete.DeleteAsync();
+        }
+
+
+
+
 
         // A production app would also include an OnStop override to provide for
         // graceful shut-downs of worker-role VMs.  See

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<serviceModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PaaS_Cloud_Service" generation="1" functional="0" release="0" Id="d6a6c371-cc2c-49ef-bab7-f7272d86bd09" dslVersion="1.2.0.0" xmlns="http://schemas.microsoft.com/dsltools/RDSM">
+<serviceModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PaaS_Cloud_Service" generation="1" functional="0" release="0" Id="8debd950-63ff-45ea-a4a4-950c852a3704" dslVersion="1.2.0.0" xmlns="http://schemas.microsoft.com/dsltools/RDSM">
   <groups>
     <group name="PaaS_Cloud_ServiceGroup" generation="1" functional="0" release="0">
       <componentports>
@@ -155,9 +155,9 @@
     </group>
   </groups>
   <implements>
-    <implementation Id="b2107668-651d-4f5c-884f-bc1fc16f0dae" ref="Microsoft.RedDog.Contract\ServiceContract\PaaS_Cloud_ServiceContract@ServiceDefinition">
+    <implementation Id="25786e28-5585-40bc-b993-c2b6005286f9" ref="Microsoft.RedDog.Contract\ServiceContract\PaaS_Cloud_ServiceContract@ServiceDefinition">
       <interfacereferences>
-        <interfaceReference Id="392ede34-b70f-462f-9d33-0e1385a09704" ref="Microsoft.RedDog.Contract\Interface\MoviesWebApp:Endpoint1@ServiceDefinition">
+        <interfaceReference Id="5fd8c75a-7469-4d9f-98c9-59f142bee25a" ref="Microsoft.RedDog.Contract\Interface\MoviesWebApp:Endpoint1@ServiceDefinition">
           <inPort>
             <inPortMoniker name="/PaaS_Cloud_Service/PaaS_Cloud_ServiceGroup/MoviesWebApp:Endpoint1" />
           </inPort>
