@@ -34,18 +34,13 @@ namespace MoviesWorker
             while (true)
             {
                 try
-                {
-                    // Retrieve a new message from the queue.
-                    // A production app could be more efficient and scalable and conserve
-                    // on transaction costs by using the GetMessages method to get
-                    // multiple queue messages at a time. See:
-                    // http://azure.microsoft.com/en-us/documentation/articles/cloud-services-dotnet-multi-tier-app-storage-5-worker-role-b/#addcode
+                { 
                     msg = this.imagesQueue.GetMessage();
                     if (msg != null)
                     {
-                     //  this.imagesQueue.DeleteMessage(msg);
-                      ProcessQueueMessage(msg);
-
+                        // keep deleting for testing purpsoe
+                       //  this.imagesQueue.DeleteMessage(msg); 
+                        ProcessQueueMessage(msg);
                     }
                     else
                     {
@@ -58,10 +53,8 @@ namespace MoviesWorker
                     {
                         this.imagesQueue.DeleteMessage(msg);
                         logger.Error("Deleting poison queue item : '{0}'", msg.AsString);
-                        //Trace.TraceError("Deleting poison queue item: '{0}'", msg.AsString);
                     }
                     logger.Error("Exception in MoviesWorker: '{0}'", e.Message);
-                    //Trace.TraceError("Exception in MoviesWorker: '{0}'", e.Message);
                 }
             }
         }
@@ -72,21 +65,20 @@ namespace MoviesWorker
         /// </summary>
         /// <param name="imdbID"></param>
         /// <returns></returns>
-        private  bool MoviesExists(string imdbID)
+        private bool MoviesExists(string imdbID)
         {
             var count = db.Movies.Count(d => d.imdbID == imdbID);
             return count > 1;
         }
 
-        private async void ProcessQueueMessage(CloudQueueMessage msg)
+        private  void ProcessQueueMessage(CloudQueueMessage msg)
         {
             logger.Information("Processing queue message {0}", msg);
-            //Trace.TraceInformation("Processing queue message {0}", msg);
 
-            // Queue message contains MoviesId
             var adId = int.Parse(msg.AsString);
-            Movie movie = db.Movies.Find(adId);
+            Movie movie =  db.Movies.Find(adId);
             CloudBlockBlob imageBlob = null;
+
             if (movie == null)
             {
                 logger.Error("AdId {0} not found, can't create thumbnail and poster", adId.ToString());
@@ -95,11 +87,9 @@ namespace MoviesWorker
 
             // delete duplicates if exists
             if (MoviesExists(movie.imdbID))
-            {
-                // delete blob add timer here
-                await DeleteMovieBlobsAsync(movie);
+            {  
                 db.Movies.Remove(movie);
-                db.SaveChanges();
+                 db.SaveChanges();
                 logger.Information("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
                 this.imagesQueue.DeleteMessage(msg);
                 return;
@@ -110,8 +100,8 @@ namespace MoviesWorker
             {
                 // add Poster
                 // add timer here
-                imageBlob =  UploadAndSaveBlobAsyncByWeb(movie.Poster);
-                movie.Poster =  imageBlob.Uri.ToString();
+                imageBlob = UploadAndSaveBlobByWeb(movie.Poster);
+                movie.Poster = imageBlob.Uri.ToString();
 
                 // proccess thumbnail
                 Uri blobUri = new Uri(movie.Poster);
@@ -132,7 +122,7 @@ namespace MoviesWorker
                 movie.Thumbnail = outputBlob.Uri.ToString();
                 logger.Information("Updated thumbnail URL in database: {0}", movie.Poster);
             }
-                  
+
             db.SaveChanges();
             // Remove message from queue.
             this.imagesQueue.DeleteMessage(msg);
@@ -186,10 +176,9 @@ namespace MoviesWorker
         /// </summary>
         /// <param name="imageFile"></param>
         /// <returns></returns>
-        private CloudBlockBlob UploadAndSaveBlobAsyncByWeb(string imageFile)
+        private CloudBlockBlob UploadAndSaveBlobByWeb(string imageFile)
         {
             logger.Information("Uploading image file {0}", imageFile);
-            //Trace.TraceInformation("Uploading image file {0}", imageFile);
 
             string blobName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile);
             // Retrieve reference to a blob. 
@@ -207,46 +196,13 @@ namespace MoviesWorker
             {
                 using (var fileStream = inputStream)
                 {
-                     imageBlob.UploadFromStream(fileStream);
+                    imageBlob.UploadFromStream(fileStream);
                 }
                 logger.Information("Uploaded image file to {0}", imageBlob.Uri.ToString());
-                //Trace.TraceInformation("Uploaded image file to {0}", imageBlob.Uri.ToString());
-
                 return imageBlob;
             }
-
             return null;
         }
-        /// <summary>
-        ///  DeleteMovieBlobsAsync Fucntion:
-        ///  delete blob from the storage
-        /// </summary>
-        /// <param name="movie"></param>
-        /// <returns></returns>
-        private async Task DeleteMovieBlobsAsync(Movie movie)
-        {
-            if (!string.IsNullOrWhiteSpace(movie.Poster))
-            {
-                Uri blobUri = new Uri(movie.Poster);
-                await DeleteMovieBlobAsync(blobUri);
-            }
-            if (!string.IsNullOrWhiteSpace(movie.Thumbnail))
-            {
-                Uri blobUri = new Uri(movie.Thumbnail);
-                await DeleteMovieBlobAsync(blobUri);
-            }
-        }
-        private async Task DeleteMovieBlobAsync(Uri blobUri)
-        {
-            string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
-            logger.Information("Deleting image blob {0}", blobName);
-            //Trace.TraceInformation("Deleting image blob {0}", blobName);
-            CloudBlockBlob blobToDelete = imagesBlobContainer.GetBlockBlobReference(blobName);
-            await blobToDelete.DeleteAsync();
-        }
-
-
-
 
 
         // A production app would also include an OnStop override to provide for
@@ -283,13 +239,11 @@ namespace MoviesWorker
             }
 
             logger.Information("Creating images queue");
-            //Trace.TraceInformation("Creating images queue");
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
             imagesQueue = queueClient.GetQueueReference("images");
             imagesQueue.CreateIfNotExists();
 
             logger.Information("Storage initialized");
-            //Trace.TraceInformation("Storage initialized");
             return base.OnStart();
         }
     }

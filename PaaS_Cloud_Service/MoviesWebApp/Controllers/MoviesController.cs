@@ -12,7 +12,6 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System.IO;
-using System.Diagnostics;
 using System.Xml;
 using MyLogger;
 
@@ -31,7 +30,7 @@ namespace MoviesWebApp.Controllers
             InitializeStorage();
         }
 
-        private void InitializeStorage()
+        private  void InitializeStorage()
         {
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString"));
@@ -59,9 +58,7 @@ namespace MoviesWebApp.Controllers
         }
 
         /// <summary>
-        /// PopulteDB Page:
-        /// Creates data base based on user input such as
-        /// moviename (string), and protocol(string).
+        /// Creates data base based
         /// </summary>
         /// <param name="moviename"></param>
         /// <param name="objectType"></param>
@@ -81,11 +78,10 @@ namespace MoviesWebApp.Controllers
                         await parseByXMLDocument(pop.MovieTitle);
                         break;
                 }
-                return View("PopulateDB");
+                return RedirectToAction("Index");
             }
             return View(pop);
         }
-
 
         /// <summary>
         /// Index Page:
@@ -110,8 +106,6 @@ namespace MoviesWebApp.Controllers
             }
             return View(movie);
         }
-
-
 
         /// <summary>
         /// delete db row
@@ -149,7 +143,6 @@ namespace MoviesWebApp.Controllers
             db.Movies.Remove(movie);
             await db.SaveChangesAsync();
             logger.Information("Deleted Movie {0}", movie.MovieId);
-            //Trace.TraceInformation("Deleted Movie {0}", movie.MovieId);
             return RedirectToAction("Index");
         }
 
@@ -222,12 +215,9 @@ namespace MoviesWebApp.Controllers
             base.Dispose(disposing);
         }
 
-
-
         //=====================================================================================
-        // Blob Heandler Section:
-        // Current Section takes care of deleting the blobs instance
-        // that contains image url 
+        // Blob Deleting Section:
+        // Current Section takes care of deleting the blobs instance if image exists
         //=====================================================================================
         /// <summary>
         ///  DeleteMovieBlobsAsync Fucntion:
@@ -251,21 +241,18 @@ namespace MoviesWebApp.Controllers
         }
         private async Task DeleteMovieBlobAsync(Uri blobUri)
         {
+       
             string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
             logger.Information("Deleting image blob {0}", blobName);
-           // GetBlockBlobReference
             CloudBlockBlob blobToDelete =   imagesBlobContainer.GetBlockBlobReference(blobName);
             await blobToDelete.DeleteAsync();
         }
-        //=====================================================================================
-        // End of Blob Heandler Section   
-        //=====================================================================================
 
         //=====================================================================================
         // Parsing Heandler Section:
-        // Current Section takes parsing XML and JSON  objects that
-        // will be add to the data base
+        // Current Section is parsing XML and JSON  objects 
         //=====================================================================================
+        
         /// <summary>
         /// Parse XML object 
         /// </summary>
@@ -297,7 +284,6 @@ namespace MoviesWebApp.Controllers
                         Movie.Poster = node.Attributes.GetNamedItem("Poster").Value;
                     }
                    
-
                     db.Movies.Add(Movie);
                     await db.SaveChangesAsync();
                     var queueMessage = new CloudQueueMessage(Movie.MovieId.ToString());
@@ -366,22 +352,5 @@ namespace MoviesWebApp.Controllers
                 logger.Information("Not valid request for JSON object. Link: {0}", jsonUrl);
             }
         }
-
-        /// <summary>
-        /// doesContain
-        /// check if db contains 
-        /// current movie or not
-        /// </summary>
-        /// <param name="imdbId"></param>
-        /// <returns></returns>
-        private bool doesContain(string imdbId)
-        {
-            return db.Movies.Any(m => m.imdbID == imdbId);
-        }
-
     }
-    //=====================================================================================
-    // End of Parsing Heandler Section   
-    //=====================================================================================
-
 }
