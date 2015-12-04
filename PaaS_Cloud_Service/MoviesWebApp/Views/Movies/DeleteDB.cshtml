@@ -1,7 +1,29 @@
-﻿
+﻿@*@model IEnumerable<MoviesDBCommon.Movie>*@
 @{
     ViewBag.Title = "DeleteDB";
 }
 
-<h2>DeleteDB</h2>
+<h1>Delete DB</h1>
+<h2>Do you want to delete all rows in data base?</h2>
 
+@*@{ var i = 0; }
+@foreach (var item in Model)
+{
+    @i+=1;
+}*@
+@*<p>
+    Current quantity in data base:@Html.Display(i.ToString());
+   
+</p>*@
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <input type="submit" value="DeleteDB" class="btn btn-default" /> |
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+
+}

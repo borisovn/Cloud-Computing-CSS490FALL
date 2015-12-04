@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using MoviesDBCommon;
 using Microsoft.WindowsAzure.Storage.Queue;
@@ -14,11 +12,9 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System.IO;
-using System.Diagnostics;
 using System.Xml;
-using Newtonsoft.Json.Linq;
-using System.Drawing;
-using System.Web.Script.Serialization;
+using MyLogger;
+using System.Diagnostics;
 
 namespace MoviesWebApp.Controllers
 {
@@ -27,14 +23,16 @@ namespace MoviesWebApp.Controllers
         private MovieContext db = new MovieContext();
         private CloudQueue imagesQueue;
         private static CloudBlobContainer imagesBlobContainer;
-      
+        private ILogger logger;
+        const int _max = 1000000;
 
         public MoviesController()
         {
+            logger = new Logger();
             InitializeStorage();
         }
 
-        private void InitializeStorage()
+        private  void InitializeStorage()
         {
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString"));
@@ -62,9 +60,7 @@ namespace MoviesWebApp.Controllers
         }
 
         /// <summary>
-        /// PopulteDB Page:
-        /// Creates data base based on user input such as
-        /// moviename (string), and protocol(string).
+        /// Creates data base based
         /// </summary>
         /// <param name="moviename"></param>
         /// <param name="objectType"></param>
@@ -75,6 +71,8 @@ namespace MoviesWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var timer = Stopwatch.StartNew();
+                timer.Start();
                 switch (pop.Protocol)
                 {
                     case "JSON":
@@ -84,11 +82,13 @@ namespace MoviesWebApp.Controllers
                         await parseByXMLDocument(pop.MovieTitle);
                         break;
                 }
-                return View("PopulateDB");
+                timer.Stop();
+                logger.Information("Generated DB based on {0} protocol. Timespan: {1} ", pop.Protocol,
+                    ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
+                return RedirectToAction("Index");
             }
             return View(pop);
         }
-
 
         /// <summary>
         /// Index Page:
@@ -114,11 +114,9 @@ namespace MoviesWebApp.Controllers
             return View(movie);
         }
 
-
-
         /// <summary>
-        /// Delete Function
-        /// delete db row 
+        /// delete db row
+        /// based on id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -146,12 +144,15 @@ namespace MoviesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            // retrive the movie
+            var timer = Stopwatch.StartNew();
+            timer.Start();
             Movie movie = await db.Movies.FindAsync(id);
             await DeleteMovieBlobsAsync(movie);
             db.Movies.Remove(movie);
             await db.SaveChangesAsync();
-            Trace.TraceInformation("Deleted Movie {0}", movie.MovieId);
+            timer.Stop();
+            logger.Information("Deleted Movie {0}. Timespan: {1} ", movie.MovieId, 
+                ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
             return RedirectToAction("Index");
         }
 
@@ -164,7 +165,10 @@ namespace MoviesWebApp.Controllers
         public async Task<ActionResult> SearchMovies(string title, string year, string type)
         {
             var movies = from m in db.Movies
-                        select m;
+                         select m;
+
+            var timer = Stopwatch.StartNew();
+            timer.Start();
 
             if (!String.IsNullOrEmpty(title))
             {
@@ -180,13 +184,50 @@ namespace MoviesWebApp.Controllers
             {
                 movies = movies.Where(s => s.Type.Contains(type));
             }
+            timer.Stop();
+            logger.Information("Filtered Movies. Timespan: {0} ",
+             ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
 
             return View(await movies.ToListAsync());
         }
 
+        public ActionResult DeleteDB()
+        {
+            return View();
+        }
+        /// <summary>
+        /// Delete all movies in data base
+        /// </summary>
+        /// <param name="delete"></param>
+        /// <returns></returns>
+        [HttpPost, ActionName("DeleteDB")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DeleteDBConfirmed()
+        {
+            var movies = await db.Movies.ToListAsync();
+
+            var timeTotal = Stopwatch.StartNew();
+            timeTotal.Start();
+
+            foreach (var movie in movies)
+            {
+                var timer = Stopwatch.StartNew();
+                timer.Start();
+                await DeleteMovieBlobsAsync(movie);
+                db.Movies.Remove(movie);
+                await db.SaveChangesAsync();
+                timer.Stop();
+                logger.Information("Deleted Movie {0}. Timespan: {1}", movie.MovieId,
+                    ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
+            }
+            logger.Information("Deleted All Movies from data base. Timespan: {0}",
+                    ((double)(timeTotal.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
+            timeTotal.Stop();
+            return RedirectToAction("Index", "Home");
+        }
+
 
         /// <summary>
-        /// Dispose function
         /// dispose database
         /// </summary>
         /// <param name="disposing"></param>
@@ -199,51 +240,10 @@ namespace MoviesWebApp.Controllers
             base.Dispose(disposing);
         }
 
-
-
         //=====================================================================================
-        // Blob Heandler Section:
-        // Current Section takes care of creating, deleting the blobs instance
-        // that contains image url 
+        // Blob Deleting Section:
+        // Current Section takes care of deleting the blobs instance if image exists
         //=====================================================================================
-
-        /// <summary>
-        ///  UploadAndSaveBlobAsyncByWeb Fucntion:
-        ///  upload and save imahge to blob
-        /// </summary>
-        /// <param name="imageFile"></param>
-        /// <returns></returns>
-        private async Task<CloudBlockBlob> UploadAndSaveBlobAsyncByWeb(string imageFile)
-        {
-            Trace.TraceInformation("Uploading image file {0}", imageFile);
-
-            string blobName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile);
-            // Retrieve reference to a blob. 
-            CloudBlockBlob imageBlob = imagesBlobContainer.GetBlockBlobReference(blobName);
-            // Create the blob by uploading a local file.
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(imageFile);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream inputStream = response.GetResponseStream();
-
-            if ((response.StatusCode == HttpStatusCode.OK ||
-       response.StatusCode == HttpStatusCode.Moved ||
-       response.StatusCode == HttpStatusCode.Redirect) &&
-       response.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase))
-            {
-                using (var fileStream = inputStream)
-                {
-                    await imageBlob.UploadFromStreamAsync(fileStream);
-                }
-
-                Trace.TraceInformation("Uploaded image file to {0}", imageBlob.Uri.ToString());
-
-                return imageBlob;
-            }
-
-            return null;
-        }
-
         /// <summary>
         ///  DeleteMovieBlobsAsync Fucntion:
         ///  delete blob from the storage
@@ -252,92 +252,72 @@ namespace MoviesWebApp.Controllers
         /// <returns></returns>
         private async Task DeleteMovieBlobsAsync(Movie movie)
         {
-            if (!string.IsNullOrWhiteSpace(movie.Poster))
+            if (!string.IsNullOrWhiteSpace(movie.Poster) && (movie.Poster !="N/A"))
             {
                 Uri blobUri = new Uri(movie.Poster);
                 await DeleteMovieBlobAsync(blobUri);
             }
+            if (!string.IsNullOrWhiteSpace(movie.Poster) && (movie.Poster !="N/A"))
             if (!string.IsNullOrWhiteSpace(movie.Thumbnail))
             {
-                Uri blobUri = new Uri(movie.Poster);
+                Uri blobUri = new Uri(movie.Thumbnail);
                 await DeleteMovieBlobAsync(blobUri);
             }
         }
-        private static async Task DeleteMovieBlobAsync(Uri blobUri)
+        private async Task DeleteMovieBlobAsync(Uri blobUri)
         {
+       
             string blobName = blobUri.Segments[blobUri.Segments.Length - 1];
-            Trace.TraceInformation("Deleting image blob {0}", blobName);
-            CloudBlockBlob blobToDelete = imagesBlobContainer.GetBlockBlobReference(blobName);
+            logger.Information("Deleting image blob {0}", blobName);
+            CloudBlockBlob blobToDelete =   imagesBlobContainer.GetBlockBlobReference(blobName);
             await blobToDelete.DeleteAsync();
         }
-        //=====================================================================================
-        // End of Blob Heandler Section   
-        //=====================================================================================
-
 
         //=====================================================================================
         // Parsing Heandler Section:
-        // Current Section takes parsing XML and JSON  objects that
-        // will be add to the data base
+        // Current Section is parsing XML and JSON  objects 
         //=====================================================================================
-
+        
         /// <summary>
-        /// parseByXMLDocument Fucntion:
         /// Parse XML object 
         /// </summary>
-        /// <param name="temp"></param>
+        /// <param name="param"></param>
         /// <returns></returns>
-        private async Task parseByXMLDocument(string temp)
+        private async Task parseByXMLDocument(string param)
         {
             // build search string
-            string xmlUrl = "http://www.omdbapi.com/?s=" + temp + "&r=xml";
-
+            string xmlUrl = "http://www.omdbapi.com/?s=" + param + "&r=xml";
+            logger.Information("Creating new object based on XML format. Link: {0}", xmlUrl);
             XmlDocument doc = new XmlDocument();
             doc.Load(xmlUrl);
-            XmlNodeList MovieNodeList =
-                doc.SelectNodes("/root/result");
-
-            // get root
-
+            XmlNodeList MovieNodeList = doc.SelectNodes("/root/result");
 
             // check if xml file return anything
             if (MovieNodeList != null)
             {
-
                 // pasre the xml object
                 foreach (XmlNode node in MovieNodeList)
                 {
+                    var Movie = new Movie();
+                    Movie.Title = node.Attributes.GetNamedItem("Title").Value;
+                    Movie.Year = node.Attributes.GetNamedItem("Year").Value;
+                    Movie.imdbID = node.Attributes.GetNamedItem("imdbID").Value;
+                    Movie.Type = node.Attributes.GetNamedItem("Type").Value;
 
-
-                        var Movie = new Movie();
-                        CloudBlockBlob imageBlob = null;
-                        Movie.Title = node.Attributes.GetNamedItem("Title").Value;
-                        Movie.Year = node.Attributes.GetNamedItem("Year").Value;
-                        Movie.imdbID = node.Attributes.GetNamedItem("imdbID").Value;
-                        Movie.Type = node.Attributes.GetNamedItem("Type").Value;
-
-                        if (!String.IsNullOrWhiteSpace(node.Attributes.GetNamedItem("Poster").Value))
-                        {
-                            imageBlob = await UploadAndSaveBlobAsyncByWeb(node.Attributes.GetNamedItem("Poster").Value);
-                            Movie.Poster = imageBlob.Uri.ToString();
-                        }
-
-                        db.Movies.Add(Movie);
-                        await db.SaveChangesAsync();
-
-                        // work on queue
-                        if (imageBlob != null)
-                        {
-                            var queueMessage = new CloudQueueMessage(Movie.MovieId.ToString());
-                            await imagesQueue.AddMessageAsync(queueMessage);
-                            Trace.TraceInformation("Created queue message for MovieId {0}", Movie.MovieId);
-                        }
-
+                    if (node.Attributes["Poster"] != null)
+                    {
+                        Movie.Poster = node.Attributes.GetNamedItem("Poster").Value;
+                    }
+                    db.Movies.Add(Movie);
+                    await db.SaveChangesAsync();
+                    var queueMessage = new CloudQueueMessage(Movie.MovieId.ToString());
+                    await imagesQueue.AddMessageAsync(queueMessage);
+                    logger.Information("Created queue message for MovieId {0}", Movie.MovieId);
                 }
             }
             else
             {
-                Trace.TraceInformation("Not valid request: " + xmlUrl);
+                logger.Error("Not valid request for XML object. Link: {0}", xmlUrl);
             }
         }
 
@@ -352,23 +332,23 @@ namespace MoviesWebApp.Controllers
         {
             // build search string
             string jsonUrl = "http://www.omdbapi.com/?s=" + temp + "&r=json";
-            string json;
-
+            logger.Information("Creating new object based on JSON format. Link: {0}", jsonUrl);
             // make web request to retrive json objects
             WebRequest request = WebRequest.Create(jsonUrl);
             HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-           
+
             // check for valid repsonce
             if ((response.StatusCode == HttpStatusCode.OK))
             {
+                string json;
                 using (var sr = new StreamReader(response.GetResponseStream()))
                 {
                     json = sr.ReadToEnd();
                 }
-                //DataContractJsonSerializer js = new DataContractJsonSerializer(typeof(Spell));
+
                 dynamic sData = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-               // JObject sData = JObject.Parse(json);
-           
+                // JObject sData = JObject.Parse(json);
+
                 foreach (var item in sData["Search"])
                 {
                     string title = (string)item["Title"];
@@ -376,54 +356,25 @@ namespace MoviesWebApp.Controllers
                     string imdbID = (string)item["imdbID"];
                     string type = (string)item["Type"];
                     string poster = (string)item["Poster"];
-               
-                    
-                    // check for duplicates
-                        Movie movie = new Movie();
-                        CloudBlockBlob imageBlob = null;
 
-                        movie.Title = title;
-                        movie.Year = year;
-                        movie.imdbID = imdbID;
-                        movie.Type = type;
-                        if (!String.IsNullOrWhiteSpace((string)item["Poster"]) && (string)item["Poster"]!="N/A")
-                        {
-                            imageBlob = await UploadAndSaveBlobAsyncByWeb(poster);
-                            movie.Poster = imageBlob.Uri.ToString();
-                        }
+                    Movie movie = new Movie();
+                    movie.Title = title;
+                    movie.Year = year;
+                    movie.imdbID = imdbID;
+                    movie.Type = type;
+                    movie.Poster = poster;
 
-                        db.Movies.Add(movie);
-                        await db.SaveChangesAsync();
-
-                        //  work on queue
-                        if (imageBlob != null)
-                        {
-                            var queueMessage = new CloudQueueMessage(movie.MovieId.ToString());
-                            await imagesQueue.AddMessageAsync(queueMessage);
-                            Trace.TraceInformation("Created queue message for MovieId {0}", movie.MovieId);
-                        }   
+                    db.Movies.Add(movie);
+                    await db.SaveChangesAsync();
+                    var queueMessage = new CloudQueueMessage(movie.MovieId.ToString());
+                    await imagesQueue.AddMessageAsync(queueMessage);
+                    logger.Information("Created queue message for MovieId {0}", movie.MovieId);
                 }
-            } else
+            }
+            else
             {
-                Trace.TraceInformation("Not valid request: " + jsonUrl);
+                logger.Error("Not valid request for JSON object. Link: {0}", jsonUrl);
             }
         }
-
-        /// <summary>
-        /// doesContain
-        /// check if db contains 
-        /// current movie or not
-        /// </summary>
-        /// <param name="imdbId"></param>
-        /// <returns></returns>
-        private bool doesContain(string imdbId)
-        {
-            return db.Movies.Any(m => m.imdbID == imdbId);
-        }
-
     }
-    //=====================================================================================
-    // End of Parsing Heandler Section   
-    //=====================================================================================
-
 }

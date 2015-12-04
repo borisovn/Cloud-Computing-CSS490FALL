@@ -1,18 +1,14 @@
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] At least one other instance of the launcher is running. Will wait until they all finish
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Service running in Emulator Mode, will not wait/kill other instances of the launcher
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] DiagnosticsStoreRootPath set to: C:\Users\Nikita\AppData\Local\dftmp\Resources\152fef39-9a9e-45e2-8de0-2dd945e8e2f3
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Loading config file: C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Checking VM Type
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Extension set to Emulator Mode
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Reading XML configuration file
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Bypassing private config decryption
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Stopping the running plugin, if any
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] No DiagnosticsPlugin is running.
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Killing any DiagnosticsPlugin that might remain.
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:30 PM] Killing any MonAgentHost that might remain.
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:31 PM] Diagnostics plugin stopped successfully
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:47:31 PM] Resetting DiagnosticPlugin
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:48:41 PM] DiagnosticsPlugin launched successfully with new configuration
-DiagnosticsPluginLauncher.exe Information: 0 : [12/2/2015 7:48:41 PM] DiagnosticPlugin exited with code 0
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] DiagnosticsStoreRootPath set to: C:\Users\Nikita\AppData\Local\dftmp\Resources\3d356df6-f613-4d91-a8f3-127975ff101a
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Loading config file: C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Checking VM Type
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Emulator config file set to C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Extension set to Emulator Mode
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Reading XML configuration file
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Bypassing private config decryption
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Stopping the running plugin, if any
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Found a MonAgentHost.exe. WadArguments: "C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWebApp\plugins\Diagnostics\Monitor\x64\MonAgentHost.exe" -LocalPath "C:\Users\Nikita\AppData\Local\dftmp\Resources\55b452ab-5bc6-4254-8bff-a2d39cbe8c0f\WAD0104"  -ConfigFile "C:\Users\Nikita\AppData\Local\dftmp\Resources\55b452ab-5bc6-4254-8bff-a2d39cbe8c0f\WAD0104\Configuration\MaConfig.xml" -ShutDownEvent WADDM-ShutDown-f48a5d9d40a94075b7d26c70f881f661  -TotalShutDownEvent WADDM-TotalShutDown-f48a5d9d40a94075b7d26c70f881f661 -InitializedEvent WADM-StartUp-f48a5d9d40a94075b7d26c70f881f661 -parent 16928 -events -wadVer1v4 -UseProxyServer.
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Found a DiagnosticsPlugin.exe. WadArguments: "C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWebApp\plugins\Diagnostics\DiagnosticsPlugin.exe" DiagnosticPlugin-ShutdownEvent DiagnosticPlugin-TotalShutdownEvent -wadVer1v4.
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Loading config file: C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker\approot\diagnostics.wadcfgx
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Reading XML configuration file
+DiagnosticsPluginLauncher.exe Information: 0 : [12/4/2015 10:14:02 PM] Bypassing private config decryption
