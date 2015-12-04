@@ -98,6 +98,7 @@ namespace MoviesWorker
             {
                 db.Movies.Remove(movie);
                 db.SaveChanges();
+
                 logger.Information("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
                 //Trace.TraceInformation("Deleted Duplicate movie Movie {0} wiht imdbID {1}", movie.MovieId, movie.imdbID);
                 this.imagesQueue.DeleteMessage(msg);
