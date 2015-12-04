@@ -14,6 +14,7 @@ using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System.IO;
 using System.Xml;
 using MyLogger;
+using System.Diagnostics;
 
 namespace MoviesWebApp.Controllers
 {
@@ -23,6 +24,7 @@ namespace MoviesWebApp.Controllers
         private CloudQueue imagesQueue;
         private static CloudBlobContainer imagesBlobContainer;
         private ILogger logger;
+        const int _max = 1000000;
 
         public MoviesController()
         {
@@ -69,6 +71,8 @@ namespace MoviesWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                var timer = Stopwatch.StartNew();
+                timer.Start();
                 switch (pop.Protocol)
                 {
                     case "JSON":
@@ -78,6 +82,9 @@ namespace MoviesWebApp.Controllers
                         await parseByXMLDocument(pop.MovieTitle);
                         break;
                 }
+                timer.Stop();
+                logger.Information("Generated DB based on {0} protocol. Timespan: {1} ", pop.Protocol,
+                    ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
                 return RedirectToAction("Index");
             }
             return View(pop);
@@ -137,12 +144,15 @@ namespace MoviesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            // retrive the movie
+            var timer = Stopwatch.StartNew();
+            timer.Start();
             Movie movie = await db.Movies.FindAsync(id);
             await DeleteMovieBlobsAsync(movie);
             db.Movies.Remove(movie);
             await db.SaveChangesAsync();
-            logger.Information("Deleted Movie {0}", movie.MovieId);
+            timer.Stop();
+            logger.Information("Deleted Movie {0}. Timespan: {1} ", movie.MovieId, 
+                ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
             return RedirectToAction("Index");
         }
 
@@ -156,6 +166,9 @@ namespace MoviesWebApp.Controllers
         {
             var movies = from m in db.Movies
                          select m;
+
+            var timer = Stopwatch.StartNew();
+            timer.Start();
 
             if (!String.IsNullOrEmpty(title))
             {
@@ -171,6 +184,9 @@ namespace MoviesWebApp.Controllers
             {
                 movies = movies.Where(s => s.Type.Contains(type));
             }
+            timer.Stop();
+            logger.Information("Filtered Movies. Timespan: {0} ",
+             ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
 
             return View(await movies.ToListAsync());
         }
@@ -190,14 +206,23 @@ namespace MoviesWebApp.Controllers
         {
             var movies = await db.Movies.ToListAsync();
 
+            var timeTotal = Stopwatch.StartNew();
+            timeTotal.Start();
+
             foreach (var movie in movies)
             {
+                var timer = Stopwatch.StartNew();
+                timer.Start();
                 await DeleteMovieBlobsAsync(movie);
                 db.Movies.Remove(movie);
                 await db.SaveChangesAsync();
-                logger.Information("Deleted Movie {0}", movie.MovieId);
+                timer.Stop();
+                logger.Information("Deleted Movie {0}. Timespan: {1}", movie.MovieId,
+                    ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
             }
-
+            logger.Information("Deleted All Movies from data base. Timespan: {0}",
+                    ((double)(timeTotal.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
+            timeTotal.Stop();
             return RedirectToAction("Index", "Home");
         }
 
@@ -283,7 +308,6 @@ namespace MoviesWebApp.Controllers
                     {
                         Movie.Poster = node.Attributes.GetNamedItem("Poster").Value;
                     }
-                   
                     db.Movies.Add(Movie);
                     await db.SaveChangesAsync();
                     var queueMessage = new CloudQueueMessage(Movie.MovieId.ToString());
@@ -293,7 +317,7 @@ namespace MoviesWebApp.Controllers
             }
             else
             {
-                logger.Information("Not valid request for XML object. Link: {0}", xmlUrl);
+                logger.Error("Not valid request for XML object. Link: {0}", xmlUrl);
             }
         }
 
@@ -349,7 +373,7 @@ namespace MoviesWebApp.Controllers
             }
             else
             {
-                logger.Information("Not valid request for JSON object. Link: {0}", jsonUrl);
+                logger.Error("Not valid request for JSON object. Link: {0}", jsonUrl);
             }
         }
     }
