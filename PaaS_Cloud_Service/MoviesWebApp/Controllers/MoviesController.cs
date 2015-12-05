@@ -28,6 +28,7 @@ namespace MoviesWebApp.Controllers
 
         public MoviesController()
         {
+           
             logger = new Logger();
             InitializeStorage();
         }
@@ -36,12 +37,12 @@ namespace MoviesWebApp.Controllers
         {
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString"));
-
+            
             // Get context object for working with blobs, and 
             // set a default retry policy appropriate for a web user interface.
             var blobClient = storageAccount.CreateCloudBlobClient();
             blobClient.RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(3), 3);
-
+            logger.Information("Retriving images blob container named images from Web Role");
             // Get a reference to the blob container.
             imagesBlobContainer = blobClient.GetContainerReference("images");
 
@@ -49,7 +50,7 @@ namespace MoviesWebApp.Controllers
             // set a default retry policy appropriate for a web user interface.
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
             queueClient.RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(3), 3);
-
+            logger.Information("Retriving images queue from Web Role");
             // Get a reference to the queue.
             imagesQueue = queueClient.GetQueueReference("images");
         }
@@ -83,7 +84,7 @@ namespace MoviesWebApp.Controllers
                         break;
                 }
                 timer.Stop();
-                logger.Information("Generated DB based on {0} protocol. Timespan: {1} ", pop.Protocol,
+                logger.Information("Web role. Generated DB based on {0} protocol. Timespan: {1} ", pop.Protocol,
                     ((double)(timer.Elapsed.TotalMilliseconds * 1000000) / _max).ToString("0.00 ns"));
                 return RedirectToAction("Index");
             }

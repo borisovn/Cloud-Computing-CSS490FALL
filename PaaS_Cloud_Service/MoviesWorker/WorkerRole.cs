@@ -27,7 +27,7 @@ namespace MoviesWorker
         const int _max = 1000000;
         public override void Run()
         {
-            logger.Information("Movie entry point called");
+            logger.Information("Movie entry point called from Worker Role");
             CloudQueueMessage msg = null;
 
             while (true)
@@ -236,7 +236,7 @@ namespace MoviesWorker
             // Open storage account using credentials from .cscfg file.
             var storageAccount = CloudStorageAccount.Parse
                 (RoleEnvironment.GetConfigurationSettingValue("StorageConnectionString"));
-            logger.Information("Creating images blob container named images");
+            logger.Information("Retriving images blob container named images from Worker Role");
             var blobClient = storageAccount.CreateCloudBlobClient();
             imagesBlobContainer = blobClient.GetContainerReference("images");
             if (imagesBlobContainer.CreateIfNotExists())
@@ -249,11 +249,11 @@ namespace MoviesWorker
                     });
             }
 
-            logger.Information("Creating images queue");
+            
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
             imagesQueue = queueClient.GetQueueReference("images");
             imagesQueue.CreateIfNotExists();
-            logger.Information("Storage initialized");
+            logger.Information("Storage initialized from Worker Role");
 
             return base.OnStart();
         }

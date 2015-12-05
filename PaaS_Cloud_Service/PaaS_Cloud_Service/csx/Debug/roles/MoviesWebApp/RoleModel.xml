@@ -24,14 +24,14 @@
     <Property name="SetConfiguration" value="Configuration=Debug" />
     <Property name="SetPlatform" value="Platform=AnyCPU" />
     <Property name="RoleTargetFramework" value="v4.5.1" />
-    <Property name="OutputDir" value="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\obj\Debug\MoviesWebApp\" />
+    <Property name="OutputDir" value="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\obj\Debug\MoviesWebApp\" />
     <Property name="EntryPoint" value="MoviesWebApp.dll" />
-    <Property name="SourceDir" value="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesWebApp\" />
-    <Property name="SitePhysicalPath" value="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesWebApp\" />
+    <Property name="SourceDir" value="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesWebApp\" />
+    <Property name="SitePhysicalPath" value="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesWebApp\" />
     <Property name="TargetRuntimeVersion" value="v4.0" />
   </Properties>
   <Sites>
-    <Site name="Web" physicalDirectory="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesWebApp\">
+    <Site name="Web" physicalDirectory="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\MoviesWebApp\">
       <Bindings>
         <Binding name="Endpoint1" endpointName="Endpoint1" />
       </Bindings>

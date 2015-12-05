@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<serviceModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PaaS_Cloud_Service" generation="1" functional="0" release="0" Id="faab340e-ff18-4ece-8d07-f5fa5871b66a" dslVersion="1.2.0.0" xmlns="http://schemas.microsoft.com/dsltools/RDSM">
+<serviceModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PaaS_Cloud_Service" generation="1" functional="0" release="0" Id="b6d79705-1b2c-4b4a-8a3e-3f23a12d86ba" dslVersion="1.2.0.0" xmlns="http://schemas.microsoft.com/dsltools/RDSM">
   <groups>
     <group name="PaaS_Cloud_ServiceGroup" generation="1" functional="0" release="0">
       <componentports>
@@ -102,7 +102,7 @@
       </maps>
       <components>
         <groupHascomponents>
-          <role name="MoviesWebApp" generation="1" functional="0" release="0" software="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWebApp" entryPoint="base\x64\WaHostBootstrapper.exe" parameters="base\x64\WaIISHost.exe " memIndex="-1" hostingEnvironment="frontendadmin" hostingEnvironmentVersion="2">
+          <role name="MoviesWebApp" generation="1" functional="0" release="0" software="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWebApp" entryPoint="base\x64\WaHostBootstrapper.exe" parameters="base\x64\WaIISHost.exe " memIndex="-1" hostingEnvironment="frontendadmin" hostingEnvironmentVersion="2">
             <componentports>
               <inPort name="Endpoint1" protocol="http" portRanges="80" />
             </componentports>
@@ -123,7 +123,7 @@
           </sCSPolicy>
         </groupHascomponents>
         <groupHascomponents>
-          <role name="MoviesWorker" generation="1" functional="0" release="0" software="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker" entryPoint="base\x64\WaHostBootstrapper.exe" parameters="base\x64\WaWorkerHost.exe " memIndex="-1" hostingEnvironment="consoleroleadmin" hostingEnvironmentVersion="2">
+          <role name="MoviesWorker" generation="1" functional="0" release="0" software="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\csx\Debug\roles\MoviesWorker" entryPoint="base\x64\WaHostBootstrapper.exe" parameters="base\x64\WaWorkerHost.exe " memIndex="-1" hostingEnvironment="consoleroleadmin" hostingEnvironmentVersion="2">
             <settings>
               <aCS name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" defaultValue="" />
               <aCS name="moviesassignment03DbConnectionString" defaultValue="" />
@@ -155,9 +155,9 @@
     </group>
   </groups>
   <implements>
-    <implementation Id="61f1f82e-4b75-4ab7-ac97-0476ba82de48" ref="Microsoft.RedDog.Contract\ServiceContract\PaaS_Cloud_ServiceContract@ServiceDefinition">
+    <implementation Id="9324c556-130f-481a-af17-2a38461a85ca" ref="Microsoft.RedDog.Contract\ServiceContract\PaaS_Cloud_ServiceContract@ServiceDefinition">
       <interfacereferences>
-        <interfaceReference Id="97af9d8c-8545-4651-a708-dccc0e573ebd" ref="Microsoft.RedDog.Contract\Interface\MoviesWebApp:Endpoint1@ServiceDefinition">
+        <interfaceReference Id="bfa3a607-4da9-4d9e-8c28-a6041061796e" ref="Microsoft.RedDog.Contract\Interface\MoviesWebApp:Endpoint1@ServiceDefinition">
           <inPort>
             <inPortMoniker name="/PaaS_Cloud_Service/PaaS_Cloud_ServiceGroup/MoviesWebApp:Endpoint1" />
           </inPort>

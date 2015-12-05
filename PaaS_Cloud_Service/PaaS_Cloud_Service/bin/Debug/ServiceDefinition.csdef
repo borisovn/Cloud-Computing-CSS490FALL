@@ -26,10 +26,10 @@
     </Endpoints>
     <Contents>
       <Content destination=".\">
-        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\rcf\Debug\MoviesWebAppContent\" />
+        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\rcf\Debug\MoviesWebAppContent\" />
       </Content>
       <Content destination=".\">
-        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\ecf\MoviesWebAppContent\" />
+        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\ecf\MoviesWebAppContent\" />
       </Content>
     </Contents>
     <Imports>
@@ -57,10 +57,10 @@
     </ConfigurationSettings>
     <Contents>
       <Content destination=".\">
-        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\rcf\Debug\MoviesWorkerContent\" />
+        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\rcf\Debug\MoviesWorkerContent\" />
       </Content>
       <Content destination=".\">
-        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\ecf\MoviesWorkerContent\" />
+        <SourceDirectory path="C:\Users\Nikita\Desktop\UW_Classes\CSS490_Fall_2015\Assigment03\Final\Cloud-Computing-CSS490FALL\PaaS_Cloud_Service\PaaS_Cloud_Service\ecf\MoviesWorkerContent\" />
       </Content>
     </Contents>
     <Imports>
